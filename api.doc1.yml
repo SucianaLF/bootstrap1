@@ -1,0 +1,283 @@
+swagger: '2.0'
+info:
+  title: Skilmu
+  version: 1.0.0
+  description: Skilmu API Documentartion
+  contact:
+    name: pinteraktif.com
+    email: info@pinteraktif.com
+host: 'demo.skilmu.com:3000'
+basePath: /
+schemes:
+  - http
+  - https
+securityDefinitions:
+  jwtAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+tags:
+  - name: authentication
+    description: Handling authentication protocol
+  - name: catalogs
+    description: Everything about catalogs
+  - name: instructors
+    description: Everything about instructors
+  - name: users
+    description: Everything about users
+definitions:
+  Sign:
+    type: object
+    required:
+      - email
+      - pwd
+    properties:
+      email:
+        type: string
+        description: email user
+        example: user2@ex.com
+      pwd:
+        type: string
+        description: password user
+        example: user2
+  SignResponse:
+    type: object
+    required:
+      - id
+      - photo
+      - token
+    properties:
+      id:
+        type: integer
+        description: id user
+        example: '2'
+      photo:
+        type: string
+        description: photo user
+        example: 'http://lorempixel.com/72/72'
+      token:
+        type: string
+        description: password user
+        example: xxx
+  Sign400Response:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+        description: message error
+        example: mesage error
+  AuthResponse:
+    type: object
+    required:
+      - id
+      - photo
+    properties:
+      id:
+        type: integer
+        description: id user
+        example: '2'
+      photo:
+        type: string
+        description: photo user
+        example: 'http://lorempixel.com/72/72'
+  CatalogsNormalResponse:
+    type: array
+    items:
+      $ref: '#/definitions/CatalogNormalResponse'
+  CatalogNormalResponse:
+    type: object
+    required:
+      - id
+      - name
+    properties:
+      id:
+        type: integer
+        description: catalog id
+        example: '2'
+      name:
+        type: string
+        description: catalog name
+        example: catalog name
+      rating:
+        type: float
+        description: catalog rating
+        example: '4.2'
+      reviewsCount:
+        type: integer
+        description: catalog reviews total count
+        example: '23'
+      price:
+        type: integer
+        description: catalog price
+        example: '230000'
+paths:
+  /sign:
+    post:
+      tags:
+        - authentication
+      summary: get signed token
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: sign
+          in: body
+          description: email and pwd
+          required: true
+          schema:
+            $ref: '#/definitions/Sign'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SignResponse'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Sign400Response'
+  /auth:
+    get:
+      tags:
+        - authentication
+      summary: authenticate user
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/AuthResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Sign400Response'
+      security:
+        - jwtAuth: []
+  '/users/{id}/messages':
+    get:
+      tags:
+        - users
+      summary: authenticate user
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: user id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Sign400Response'
+      security:
+        - jwtAuth: []
+  /catalogs/popular:
+    get:
+      tags:
+        - catalogs
+      summary: get popular catalogs list
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CatalogsNormalResponse'
+  /catalogs/latest:
+    get:
+      tags:
+        - catalogs
+      summary: get latest catalogs list
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CatalogsNormalResponse'
+  '/catalogs/{id}/material/{mid}':
+    get:
+      tags:
+        - catalogs
+      summary: get latest catalogs list
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          description: id catalog
+          required: true
+        - name: mid
+          in: path
+          type: integer
+          description: id material
+          required: true
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Sign400Response'
+        '402':
+          description: Payment Required
+          schema:
+            $ref: '#/definitions/Sign400Response'
+      security:
+        - jwtAuth: []
+  /instructors/chosen:
+    get:
+      tags:
+        - instructors
+      summary: get popular catalogs list
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+  '/users/{id}/carts':
+    get:
+      tags:
+        - users
+      summary: get users cart
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          description: id user
+          required: true
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Sign400Response'
+      security:
+        - jwtAuth: []
+responses: {}
+parameters: {}
